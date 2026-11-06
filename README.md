@@ -4,13 +4,18 @@ A complete local full-stack reflection companion, built from the original fronte
 
 ## Quick start (Windows / PowerShell)
 
-Install **Node.js 24.14 or newer**. No Python or external database service is needed.
+Install **Node.js 24.14 or newer**. Install Git if you want to use the clone command below. No Python or external database service is needed.
+
+Open PowerShell in the folder where you want to keep the project:
 
 ```powershell
-cd "C:\Users\laddo\OneDrive\Documents\ChatGPT\Job\Mental-Health-Chatbot-main"
+git clone https://github.com/JaiKaushik03/Mental-Health-Chatbot.git
+cd Mental-Health-Chatbot
 npm.cmd ci
 npm.cmd run dev
 ```
+
+Alternatively, use **Code → Download ZIP** on GitHub, extract it, and open PowerShell in the extracted folder containing `package.json`. Skip the `git clone` and `cd` lines and run the two `npm.cmd` commands. To inspect or edit the code, open that same project folder in your editor.
 
 Open **http://localhost:5173**. The development command starts both frontend and backend. Use the exact localhost address: browser writes are restricted to the configured UI origin. Stop with Ctrl+C.
 
