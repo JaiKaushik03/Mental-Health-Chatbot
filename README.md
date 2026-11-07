@@ -1,5 +1,14 @@
 # Still — Mental Health Chatbot
 
+## Tested screenshots
+
+Captured from the running local full-stack application on November 7, 2026 with fictional guest text. The scripted demo is explicitly labeled; no live AI-provider inference was tested or claimed. All 16 backend tests passed, and the production frontend build completed successfully.
+
+![Login screen](docs/screenshots/login.png)
+
+![Scripted demo conversation](docs/screenshots/demo-conversation.png)
+
+
 A complete local full-stack reflection companion, built from the original frontend project. React + TypeScript + Vite on the client; a Node.js HTTP API and persistent SQLite database on the server.
 
 ## Quick start (Windows / PowerShell)
