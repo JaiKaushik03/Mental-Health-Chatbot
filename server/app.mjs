@@ -185,6 +185,16 @@ export function createApp({
         res.end(method === "HEAD" ? undefined : content);
         return;
       }
+      // Readiness probes must not consume a user's rate-limit budget or depend
+      // on their session. Check the database connection without exposing data.
+      if (path === "/api/health" && ["GET", "HEAD"].includes(method)) {
+        try {
+          db.prepare("SELECT 1").get();
+          return json(res, 200, { status: "ok", mode });
+        } catch {
+          return json(res, 503, { status: "unavailable" });
+        }
+      }
       // Browser writes must come from our UI. Requests without Origin are allowed for same-site forms and CLI clients.
       if (
         !["GET", "HEAD"].includes(method) &&
@@ -195,8 +205,6 @@ export function createApp({
       cleanup();
       limit(`ip:${req.socket.remoteAddress}`, 240);
       const user = session(req);
-      if (path === "/api/health" && method === "GET")
-        return json(res, 200, { status: "ok", mode });
       if (path === "/api/auth/session" && method === "GET")
         return json(res, 200, { user: user ? safeUser(user) : null, mode });
       if (

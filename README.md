@@ -2,7 +2,7 @@
 
 ## Tested screenshots
 
-Captured from the running local full-stack application on November 7, 2026 with fictional guest text. The scripted demo is explicitly labeled; no live AI-provider inference was tested or claimed. All 16 backend tests passed, and the production frontend build completed successfully.
+Captured from the running local full-stack application on November 7, 2026 with fictional guest text. The scripted demo is explicitly labeled; no live AI-provider inference was tested or claimed. The initial 16 backend tests passed, and the production frontend build completed successfully.
 
 ![Login screen](docs/screenshots/login.png)
 
@@ -159,3 +159,23 @@ scripts/           Development and built-app launchers
 - **Session repeatedly expires:** do not enable secure cookies on plain local HTTP; check the server clock.
 - **Port already in use:** stop the previous server or choose another backend port and update the dev proxy.
 - **SQLite experimental warning:** Node 24 labels its built-in SQLite API experimental; the warning is expected on the verified runtime (Node 24.14.0).
+
+
+## Reliability and local performance verification
+
+The review branch adds database-backed GET/HEAD readiness checks at `/api/health`. Readiness does not require a session or consume the application rate-limit budget. An unavailable database returns HTTP 503 with no private state.
+
+Verified locally on November 12, 2026: **20 backend tests pass**, ESLint passes, and the production frontend build succeeds. The new tests cover anonymous readiness, HEAD semantics, readiness during application rate limiting and database failure.
+
+Run `node scripts/benchmark-api.mjs` for a fixed synthetic workload: 100 conversations in a temporary on-disk SQLite database, ten warm-up reads and 100 authenticated GET requests at each concurrency level (1 and 8). Raw latency samples and environment details are in [the benchmark JSON](docs/benchmarks/api-results.json). This run completed 200 measured requests with zero errors. At concurrency 8, p95 was approximately 14.42 ms on the recorded local machine. These are loopback API measurements, not external-network, AI-inference or sustained production-load results.
+
+### Container setup
+
+```bash
+docker build -t still-demo .
+docker run --rm -p 127.0.0.1:3001:3001 -v still-data:/data still-demo
+```
+
+Open `http://localhost:3001`. The image runs as a non-root user and uses a persistent volume for SQLite. The initial configuration is a scripted demonstration with no paid provider key. For an approved hosted deployment, configure the exact HTTPS origin and secure cookies as described above; do not expose private chats or provider secrets.
+
+A GitHub Actions workflow runs lint, tests, frontend build and the synthetic API benchmark. A separate job builds and smoke-tests the container. Docker is unavailable on the local validation machine, so container behavior is not labelled locally verified; inspect the actual workflow result before making a container-runtime claim. No public service has been deployed by this change.
